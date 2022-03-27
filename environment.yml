@@ -1,0 +1,10 @@
+name: q_learn
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python= 3.7
+  - numpy
+  - flask
+  - pip:
+    - Flask-Testing
