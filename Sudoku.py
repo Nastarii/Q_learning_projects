@@ -1,3 +1,6 @@
+from matplotlib.patches import Rectangle
+import matplotlib.pyplot as plt
+import pandas as pd
 import numpy as np
 
 class makeEnvironment():
@@ -28,9 +31,35 @@ class makeEnvironment():
 
     def sample(self):
         return self.action_space()[np.random.randint(self.n())]
-    
+
+    def render(self):
+        fig, ax = plt.subplots()
+
+        fig.patch.set_visible(False)
+        fig.canvas.manager.set_window_title('Sudoku Board')
+        
+        ax.axis('off')
+        ax.axis('tight')
+
+        df = pd.DataFrame(self.s)
+        df[df == 0] = ''
+        ax.table(cellText=df.values, cellLoc='center', 
+                 loc='center', bbox=[0,0,1,1])
+        
+        l = 0.1096
+        for i in range(3):
+            for j in range(3):
+                ax.add_patch(Rectangle((l/3*i -0.0548, l/3*j -0.0548),l/3,l/3, facecolor='none', edgecolor='black', linewidth=2))
+        
+        fig.tight_layout()
+
+        plt.show()
+
+    def observation(self):
+        pass
+
 
 env = makeEnvironment()
-print(env.action_space())
-
-print(env.sample())
+#print(env.action_space())
+#print(env.sample())
+env.render()
