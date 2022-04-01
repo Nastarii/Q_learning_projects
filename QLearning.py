@@ -1,24 +1,51 @@
-from collections import defaultdict
+from Sudoku import make
 import numpy as np
 
-class Create():
+class Config:
 
-    def __init__(self, env, s, learning_rate= 0.01, discount_factor= 0.01):
-        self.env = env
-        self.s = s
-        self.learning_rate = learning_rate
-        self.discount_factor = discount_factor
-        self.Q = defaultdict(lambda: np.zeros(env.action_space.n))
+    def __init__(self, n_episodes, max_iter, ep, edd, mep, gamma, lr):
+        self.n_episodes = n_episodes
+        self.max_iter = max_iter
+        self.exploration_proba = ep
+        self.exploration_decreasing_decay = edd
+        self.min_exploration_proba = mep
+        self.gamma = gamma
+        self.lr = lr
+        self.total_reward = list()
 
-    def step(self):
-        return self.s + self.learning_rate *(self.reward() + self.discount_factor* self.policy() - self.s)
+env = make('Sudoku-v0')
+n_obs, n_act = env.observation_space.n, env.action_space.n
+Q_table = np.zeros((n_obs, n_act))
+prev_episode = 0
 
-    def reward(self):
-        pass
+config = Config(1000,1000, 1,0.001,0.01,0.99,0.1)
 
-    def policy(self, num_actions, eps):
-        action_probabilities = np.ones(num_actions,dtype = float) * eps / num_actions
-            
-        best_action = np.argmax(self.Q[self.s])
-        action_probabilities[best_action] += (1.0 - eps)
-        return action_probabilities
+for episode in range(config.n_episodes):
+    
+    observation = env.reset()
+    total_episode_reward = 0
+
+    for i in range(config.max_iter):
+
+        if np.random.uniform(0,1) < config.exploration_proba:
+            action = env.action_space.sample()
+        else:
+            action = np.argmax(Q_table[observation,:])
+        
+        new_observation, reward, done, _ = env.step(action)
+        
+        Q_table[observation, action] = (1- config.lr) * Q_table[observation, action] \
+        + config.lr*(reward + config.gamma*max(Q_table[new_observation,:]))
+        total_episode_reward += reward
+        
+        if done:
+            break
+
+        observation = new_observation
+    
+    exploration_proba = max(config.min_exploration_proba, np.exp(-config.exploration_decreasing_decay*episode))
+    config.total_reward.append(total_episode_reward)
+
+    if episode % 200 == 199:
+        print(f'Episodes Trained: [{episode}/{config.n_episodes}]\nMean Episode Reward: {np.mean(config.total_reward[prev_episode:episode]):.4f}')
+        prev_episode = episode
