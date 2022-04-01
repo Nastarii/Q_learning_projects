@@ -22,29 +22,27 @@ class make:
         self.name = name
         if self.name != 'Sudoku-v0':
             raise Exception('The environment need to be Sudoku-v0')
-        self.actions = []
+        self.buffer = list()
         self.s = self.rst.copy()
-        self.action_space = Discrete(self.s)
-        self.observation_space = Box(self.s, self.actions)
-    
+        self.action_space = Discrete()
+        self.observation_space = Box()
+        self.agent_i, self.agent_j = 0,2
+
     def done(self,s):
         if np.count_nonzero(s==0) == 0:
             return True
         else:
             return False
-        '''
-        for idx in range(len(self.s)):
-            if len(np.unique(self.s[idx])) != 9:
-                return False
-            if len(np.unique(self.s[:,idx])) != 9:
-                return False
-        return True
-        '''
 
-    def info(self):
-        return {'possibilities': len(self.s)**2*9,}
+    def info(self,s, i,j):
+        return {'possibilities': np.count_nonzero(s==0)*9,
+                'probability':(np.count_nonzero(s[i] != 0)/9) *  (np.count_nonzero(s[:,j] !=0)/9),
+                'iteration':len(self.buffer),
+                'maximum repetitions': 6}
 
-    def render(self,s, show=False):
+    def render(self,s=True):
+        if s:
+            s = self.s
         fig, ax = plt.subplots()
 
         fig.patch.set_visible(False)
@@ -58,8 +56,11 @@ class make:
         table = ax.table(cellText=df.values, cellLoc='center', 
                  loc='center', bbox=[0,0,1,1])
         
-        for act in self.actions:
-            table.get_celld()[(act[0],act[1])]._text.set_color(act[3])
+        for act in self.buffer:
+            if act[3] is not None:
+                table.get_celld()[(act[0],act[1])]._text.set_color(act[3])
+
+        table.get_celld()[(self.agent_i,self.agent_j)].set_facecolor('#C4A8FB')
 
         l = 0.1096
         for i in range(3):
@@ -68,69 +69,95 @@ class make:
         
         fig.tight_layout()
 
-        if show:
-            plt.show()
+        plt.show()
     
     def reset(self):
-        self.s, self.actions = self.rst, []
-        return self.observation_space
+        self.s, self.buffer, self.agent_i, self.agent_j = self.rst.copy(), [], 0, 2
+        return 4
 
     def reward(self, x, y, val, s):
-        self.color, r = self.GREEN_COLOR, 1
+        self.color, r = self.GREEN_COLOR, 0.01
 
         if len(np.unique(s[x])) == len(s[x]) or \
            len(np.unique(s[:,y])) == len(s[:,y]):
-            r += 10
-
+            r = 0.1
+ 
         for i in range(len(s)):
             for j in range(len(s)):
                 if s[i][y] == val or s[x][j] == val:
-                    r = -1
+                    r = 0
                     self.color = self.RED_COLOR
 
         return r
 
+    def to_coordinate(self, position):
+        if position == 0:
+            if self.agent_i != 0:
+                self.agent_i = self.agent_i - 1
+        elif position == 1:
+            if self.agent_j != 0:
+                self.agent_j = self.agent_j - 1
+        elif position == 2:
+            if self.agent_i != 8:
+                self.agent_i = self.agent_i + 1
+        elif position == 3:
+            if self.agent_j != 8:
+                self.agent_j = self.agent_j + 1
+            
+        return self.agent_i,self.agent_j
+
     def step(self, action, s= True):
         if s:
             s = self.s
-        i,j, value = action
-        reward = self.reward(i,j,value,s)
-        s[i][j] = value
-        self.actions.append([i, j, value, self.color])
+
+        value, position =self.action_space(action)
+        i, j = self.to_coordinate(position)
         
-        return self.observation_space(), reward, self.done(s), self.info()
+        if value != 0 and s[i][j] == 0:
+            
+            reward = self.reward(i,j,value,s)
+            s[i][j] = value
+        else:
+            self.color = None
+            reward = 0
+        
+        self.buffer.append([i, j, value, self.color])
+        self.observation_space = Box()
+        return i*9 + j, reward, self.done(s), self.info(s,i,j)
       
 class Discrete:
-    def __init__(self, s):
-        self.action_space = [(x//9, x % 9, i) for x in np.where(np.hstack(s) == 0)[0] for i in range(1,10)]
-    
-    def __repr__(self):
-        return f'Discrete({self.n()})'
+    def __init__(self):
+        self.actions = [(x, y) for x in range(10) for y in range(5)]
+        #self.action_space = [(x//9, x % 9, i) for x in np.where(np.hstack(s) == 0)[0] for i in range(1,10)]
+        self.n = len(self.actions)
 
-    def n(self):
-        return len(self.action_space)
+    def __repr__(self):
+        return f'Discrete({self.n})'
+
+    def __call__(self,idx):
+        return self.actions[idx]
 
     def sample(self):
-        return self.action_space[np.random.randint(self.n())]
-
+        return np.random.randint(self.n)
+        
 class Box:
 
-    def __init__(self, s, actions):
-        self.actions = actions
-        self.s = s
-    
-    def __call__(self):
-        return self.render(self.s)
-    
+    def __init__(self):
+        self.high = np.array([9]*3)
+        self.low = np.array([0]*3)
+        self.n = 81
+
     def __repr__(self):
-        return f'Box{self.s.shape}'
+        return f'Box(9,9)'
 
+'''
 env = make('Sudoku-v0')
+action = env.action_space.actions
+print(action, len(action))'''
 
-'''
-for i in range(50):
-    rnd_action = env.action_space.sample()
-    obs, reward, done, info =env.step(rnd_action)
-    if done:
-        break
-'''
+
+#for i in range(50):
+#    rnd_action = env.action_space.sample()
+#    obs, reward, done, info =env.step(rnd_action)
+#    if done:
+#        break
