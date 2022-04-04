@@ -2,7 +2,7 @@ import numpy as np
 import gym
 from Sudoku import make
 
-def main(alpha=0.9, gamma=0.99, episodes=10000, epsilon=1):
+def main(alpha=0.9, gamma=0.99, episodes=1000, epsilon=1):
 
     env = make('Sudoku-v0')
 
@@ -41,5 +41,3 @@ def main(alpha=0.9, gamma=0.99, episodes=10000, epsilon=1):
 
 if __name__ == '__main__':
     main()
-
-    
