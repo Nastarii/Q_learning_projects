@@ -1,9 +1,10 @@
 import numpy as np
 import gym
+from Sudoku import make
 
 def main(alpha=0.9, gamma=0.99, episodes=10000, epsilon=1):
 
-    env = gym.make('FrozenLake-v1')
+    env = make('Sudoku-v0')
 
     Q,rpe = np.zeros((env.observation_space.n,env.action_space.n)), list()
     
@@ -34,8 +35,8 @@ def main(alpha=0.9, gamma=0.99, episodes=10000, epsilon=1):
         epsilon = max(0.01, np.exp(-0.001*e))
         rpe.append(er)
 
-        if e % 1000 == 999:
-            print(f'Trained Episodes:[{e + 1}/{episodes}] --> Mean Rewards per Episode:{np.mean(rpe[e - 999:e]):.3f}')
+        if e % 200 == 199:
+            print(f'Trained Episodes:[{e + 1}/{episodes}] --> Mean Rewards per Episode:{np.log(np.mean(rpe[e - 199:e])):.3f}')
 
 
 if __name__ == '__main__':
