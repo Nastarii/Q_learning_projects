@@ -40,10 +40,4 @@ def main(alpha=0.9, gamma=0.99, episodes=1000, epsilon=1):
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD:QLearn_sudoku.py
     main()
-=======
-    main()
-
-    
->>>>>>> b2c9afa99a530f9413737555365db77d8d50e230:Toy_Environments.py
