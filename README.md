@@ -1,7 +1,7 @@
 Q-Learning algorithm to learn how to solve sukodu board
 --
 
-Sudoku solver result:
+Sudoku solver result on logaritmic scale:
 
 Trained Episodes:[200/1000] --> Mean Rewards per Episode:62.898
 
