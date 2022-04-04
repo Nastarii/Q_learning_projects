@@ -1,4 +1,4 @@
-Q-Learning algorithm to learn how to solve sukodu board
+Code to solve sukodu board with Q Learning Algorithm
 --
 
 Sudoku solver result on logaritmic scale:
