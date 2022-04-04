@@ -2,6 +2,9 @@ from matplotlib.patches import Rectangle
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import imageio
+import glob
+import os
 
 class make:
 
@@ -19,14 +22,18 @@ class make:
     RED_COLOR = '#bc0000'
     
     def __init__(self,name):
+
         self.name = name
+
         if self.name != 'Sudoku-v0':
             raise Exception('The environment need to be Sudoku-v0')
+
         self.buffer = list()
         self.s = self.rst.copy()
         self.action_space = Discrete()
         self.observation_space = Box()
         self.agent_i, self.agent_j = 0,2
+        self.iter = 0
 
     def done(self,s):
         if np.count_nonzero(s==0) == 0:
@@ -43,14 +50,22 @@ class make:
     def render(self,s=True):
         if s:
             s = self.s
+        
         fig, ax = plt.subplots()
 
         fig.patch.set_visible(False)
-        fig.canvas.manager.set_window_title(self.name)
+        fig.tight_layout()
+        
         
         ax.axis('off')
         ax.axis('tight')
 
+
+        l = 0.1096
+        for i in range(3):
+            for j in range(3):
+                ax.add_patch(Rectangle((l/3*i -0.0548, l/3*j -0.0548),l/3,l/3, facecolor='none', edgecolor='black', linewidth=2))
+        
         df = pd.DataFrame(s)
         df[df == 0] = ''
         table = ax.table(cellText=df.values, cellLoc='center', 
@@ -61,16 +76,25 @@ class make:
                 table.get_celld()[(act[0],act[1])]._text.set_color(act[3])
 
         table.get_celld()[(self.agent_i,self.agent_j)].set_facecolor('#C4A8FB')
-
-        l = 0.1096
-        for i in range(3):
-            for j in range(3):
-                ax.add_patch(Rectangle((l/3*i -0.0548, l/3*j -0.0548),l/3,l/3, facecolor='none', edgecolor='black', linewidth=2))
         
-        fig.tight_layout()
+        if self.iter < 10:
+            n = '0' + str(self.iter)
+        else:
+            n = str(self.iter)
 
-        plt.show()
+        plt.savefig('render_outputs/frame_' + n + '_.png')
+        plt.close(fig)
+
+        self.iter += 1
     
+    def animate(self, imgs= []):
+        for img in sorted(glob.glob('render_outputs/*.png')):
+            imgs.append(imageio.imread(img))
+            os.remove(img)
+        
+        imageio.mimsave('render_outputs/' + self.name + '.gif', imgs,'GIF',duration= 0.7)
+
+
     def reset(self):
         self.s, self.buffer, self.agent_i, self.agent_j = self.rst.copy(), [], 0, 2
         return 4
@@ -91,18 +115,15 @@ class make:
         return r
 
     def to_coordinate(self, position):
-        if position == 0:
-            if self.agent_i != 0:
-                self.agent_i = self.agent_i - 1
-        elif position == 1:
-            if self.agent_j != 0:
-                self.agent_j = self.agent_j - 1
-        elif position == 2:
-            if self.agent_i != 8:
-                self.agent_i = self.agent_i + 1
-        elif position == 3:
-            if self.agent_j != 8:
-                self.agent_j = self.agent_j + 1
+
+        if position == 0 and self.agent_i != 0:     
+            self.agent_i -= 1
+        elif position == 1 and self.agent_j != 0:   
+            self.agent_j -= 1
+        elif position == 2 and self.agent_i != 8:   
+            self.agent_i += 1
+        elif position == 3 and self.agent_j != 8:   
+            self.agent_j += 1
             
         return self.agent_i,self.agent_j
 
@@ -117,7 +138,9 @@ class make:
             
             reward = self.reward(i,j,value,s)
             s[i][j] = value
+
         else:
+
             self.color = None
             reward = 0
         
@@ -149,12 +172,6 @@ class Box:
 
     def __repr__(self):
         return f'Box(9,9)'
-
-'''
-env = make('Sudoku-v0')
-action = env.action_space.actions
-print(action, len(action))'''
-
 
 #for i in range(50):
 #    rnd_action = env.action_space.sample()

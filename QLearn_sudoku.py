@@ -12,8 +12,12 @@ def main(alpha=0.9, gamma=0.99, episodes=1000, epsilon=1):
 
         s, er = env.reset(), 0
         
-        for i in range(100):
+        for i in range(99):
             
+            if e == episodes - 1:
+                
+                env.render()
+
             if np.random.uniform(0,1) < epsilon:
                 
                 a = env.action_space.sample()
@@ -38,6 +42,7 @@ def main(alpha=0.9, gamma=0.99, episodes=1000, epsilon=1):
         if e % 200 == 199:
             print(f'Trained Episodes:[{e + 1}/{episodes}] --> Mean Rewards per Episode:{np.log(np.mean(rpe[e - 199:e])):.3f}')
 
+    env.animate()
 
 if __name__ == '__main__':
     main()
