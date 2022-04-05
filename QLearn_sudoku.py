@@ -12,6 +12,7 @@ def main(alpha=0.9, gamma=0.99, episodes=2000, epsilon=1):
 
         s, er = env.reset(), 0
         
+<<<<<<< HEAD
         for _ in range(100):
             
             if e == episodes - 1:
@@ -22,6 +23,13 @@ def main(alpha=0.9, gamma=0.99, episodes=2000, epsilon=1):
                 env.render()
                 print(f'{len(env.render_buffer)}%')
                 
+=======
+        for i in range(99):
+            
+            if e == episodes - 1:
+                
+                env.render()
+>>>>>>> d4dc51f391965d9489fc8ac61039473ee3e7ffc6
 
             if np.random.uniform(0,1) < epsilon:
                 

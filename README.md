@@ -1,26 +1,18 @@
-multiple implementations of Q-Learning algorithm
-
-Sudoku solver result:
-Trained Episodes:[200/10000] --> Mean Rewards per Episode:2271503059707062155430854656.000
+Code to Solve Sukodu Board With Q Learning Algorithm
 --
 
-Trained Episodes:[400/10000] --> Mean Rewards per Episode:3286937741078281998315814912.000
---
+Sudoku solver rewards result at logaritmic scale:
 
-Trained Episodes:[600/10000] --> Mean Rewards per Episode:4668152290029215108256759808.000
---
+Trained Episodes:[200/1000] --> Mean Rewards per Episode:62.898
 
-Trained Episodes:[800/10000] --> Mean Rewards per Episode:5801680112958988656431857664.000
---
+Trained Episodes:[400/1000] --> Mean Rewards per Episode:63.477
 
-Trained Episodes:[1000/10000] --> Mean Rewards per Episode:6671620089500558222805696512.000
---
+Trained Episodes:[600/1000] --> Mean Rewards per Episode:63.583
 
-Trained Episodes:[1200/10000] --> Mean Rewards per Episode:7126266189472869321596207104.000
---
+Trained Episodes:[800/1000] --> Mean Rewards per Episode:63.752
 
-Trained Episodes:[1400/10000] --> Mean Rewards per Episode:7756257426927222541552451584.000
---
+Trained Episodes:[1000/1000] --> Mean Rewards per Episode:64.043
 
-Trained Episodes:[1600/10000] --> Mean Rewards per Episode:7553612408105768250660356096.000
---
+Visualization after 1000 episodes
+
+![Sudoku-v0](https://user-images.githubusercontent.com/76565870/161645981-18e35563-c9a5-4004-9c8c-5b4c8eeed13b.gif)

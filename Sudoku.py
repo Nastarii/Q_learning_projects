@@ -3,6 +3,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import imageio
+<<<<<<< HEAD
+=======
+import glob
+import os
+>>>>>>> d4dc51f391965d9489fc8ac61039473ee3e7ffc6
 
 class make:
 
@@ -26,11 +31,16 @@ class make:
         if self.name != 'Sudoku-v0':
             raise Exception('The environment need to be Sudoku-v0')
 
+<<<<<<< HEAD
         self.buffer, self.render_buffer = list(), list()
+=======
+        self.buffer = list()
+>>>>>>> d4dc51f391965d9489fc8ac61039473ee3e7ffc6
         self.s = self.rst.copy()
         self.action_space = Discrete([(x, y) for x in range(10) for y in range(5)])
         self.observation_space = Discrete(np.hstack(self.s))
         self.agent_i, self.agent_j = 0,2
+        self.iter = 0
 
     def done(self,s):
         if np.count_nonzero(s==0) == 0:
@@ -51,10 +61,18 @@ class make:
 
         fig.patch.set_visible(False)
         fig.tight_layout()
+<<<<<<< HEAD
+=======
+        
+>>>>>>> d4dc51f391965d9489fc8ac61039473ee3e7ffc6
         
         ax.axis('off')
         ax.axis('tight')
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> d4dc51f391965d9489fc8ac61039473ee3e7ffc6
         l = 0.1096
         for i in range(3):
             for j in range(3):
@@ -71,6 +89,7 @@ class make:
 
         table.get_celld()[(self.agent_i,self.agent_j)].set_facecolor('#C4A8FB')
         
+<<<<<<< HEAD
         fig.canvas.draw()
         img = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
         self.render_buffer.append(img.reshape(480,640,3))
@@ -80,6 +99,26 @@ class make:
     def animate(self):
         return imageio.mimsave(self.name + '.gif', self.render_buffer,'GIF',duration= 0.7)
 
+=======
+        if self.iter < 10:
+            n = '0' + str(self.iter)
+        else:
+            n = str(self.iter)
+
+        plt.savefig('render_outputs/frame_' + n + '_.png')
+        plt.close(fig)
+
+        self.iter += 1
+    
+    def animate(self, imgs= []):
+        for img in sorted(glob.glob('render_outputs/*.png')):
+            imgs.append(imageio.imread(img))
+            os.remove(img)
+        
+        imageio.mimsave('render_outputs/' + self.name + '.gif', imgs,'GIF',duration= 0.7)
+
+
+>>>>>>> d4dc51f391965d9489fc8ac61039473ee3e7ffc6
     def reset(self):
         self.s, self.buffer, self.agent_i, self.agent_j = self.rst.copy(), [], 0, 2
         return 4
@@ -145,4 +184,24 @@ class Discrete:
         return self.space[idx]
 
     def sample(self):
+<<<<<<< HEAD
         return np.random.randint(self.n)
+=======
+        return np.random.randint(self.n)
+        
+class Box:
+
+    def __init__(self):
+        self.high = np.array([9]*3)
+        self.low = np.array([0]*3)
+        self.n = 81
+
+    def __repr__(self):
+        return f'Box(9,9)'
+
+#for i in range(50):
+#    rnd_action = env.action_space.sample()
+#    obs, reward, done, info =env.step(rnd_action)
+#    if done:
+#        break
+>>>>>>> d4dc51f391965d9489fc8ac61039473ee3e7ffc6
