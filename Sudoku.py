@@ -89,25 +89,26 @@ class make:
     def animate(self):
         return imageio.mimsave(self.name + '.gif', self.render_buffer,'GIF',duration= 0.7)
 
-
-
-
     def reset(self):
         self.s, self.buffer, self.agent_i, self.agent_j = self.rst.copy(), [], 0, 2
         return 4
 
     def reward(self, x, y, val, s):
         self.color, r = self.GREEN_COLOR, 1
-
-        if len(np.unique(s[x])) == len(s[x]) or \
-           len(np.unique(s[:,y])) == len(s[:,y]):
-            r = 1
  
         for i in range(len(s)):
             for j in range(len(s)):
                 if s[i][y] == val or s[x][j] == val:
                     r = 0
                     self.color = self.RED_COLOR
+
+        box_i, box_j = x - x % 3, y - y % 3
+
+        for i in range(box_i, box_i + 3):
+            for j in range(box_j, box_j + 3):
+                if s[i][j] == val:
+                    self.color = self.RED_COLOR
+                    r = 0 
 
         return r
 
@@ -143,7 +144,7 @@ class make:
         
         self.buffer.append([i, j, value, self.color])
         
-        return i*9 + j, reward, self.done(s), self.info(s,i,j)
+        return i*9 + j, reward - 0.05, self.done(s), self.info(s,i,j)
       
 class Discrete:
     def __init__(self, space):

@@ -12,7 +12,10 @@ def main(alpha=0.9, gamma=0.99, episodes=10000, epsilon=1):
 
         s, er = env.reset(), 0
         
-        for _ in range(100):
+        if e % 1000 == 999:
+            print(f'Trained Episodes:[{e + 1}/{episodes}] --> Mean Rewards per Episode:{np.mean(rpe[e - 999:e]):.3f}')
+
+        for _ in range(120):
             
             if e == episodes - 1:
                 
@@ -20,7 +23,7 @@ def main(alpha=0.9, gamma=0.99, episodes=10000, epsilon=1):
                     sys.stdout.write('\x1b[1A')
                     sys.stdout.write('\x1b[2K')
                 env.render()
-                print(f'{len(env.render_buffer)}%')
+                print(f'Rendering GIF: {len(env.render_buffer)/1.2}%')
       
 
             if np.random.uniform(0,1) < epsilon:
@@ -35,7 +38,7 @@ def main(alpha=0.9, gamma=0.99, episodes=10000, epsilon=1):
 
             Q[s,a] = alpha*Q[s,a] + (1- alpha)*(r + gamma * max(Q[s_,:]))
 
-            er += er + r
+            er += r
             
             if done:
                 break
@@ -43,10 +46,8 @@ def main(alpha=0.9, gamma=0.99, episodes=10000, epsilon=1):
             s = s_
 
         epsilon = max(0.01, np.exp(-0.001*e))
-        rpe.append(np.log(er + 1e-7))
+        rpe.append(er)
 
-        if e % 1000 == 999:
-            print(f'Trained Episodes:[{e + 1}/{episodes}] --> Mean Rewards per Episode:{np.mean(rpe[e - 999:e]):.3f}')
 
     env.animate()
 
