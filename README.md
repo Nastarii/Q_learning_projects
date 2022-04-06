@@ -1,7 +1,7 @@
 Code to Solve Sukodu Board With Q Learning Algorithm
 --
 
-Sudoku solver rewards result at logaritmic scale:
+Sudoku solver rewards results:
 
 Trained Episodes:[1000/10000] --> Mean Rewards per Episode:1.742
 
