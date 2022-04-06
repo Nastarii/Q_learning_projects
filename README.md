@@ -25,4 +25,4 @@ Trained Episodes:[10000/10000] --> Mean Rewards per Episode:9.057
 
 Rendering GIF: 100.0%
 
-![Sudoku-v0](https://user-images.githubusercontent.com/76565870/161645981-18e35563-c9a5-4004-9c8c-5b4c8eeed13b.gif)
+![Sudoku-v0](https://user-images.githubusercontent.com/76565870/162080928-c9253faf-9bb7-4fea-ba40-33c30bc45134.gif)
